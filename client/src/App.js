@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+
+import { Manager } from "socket.io-client";
+import TickersList from "./components/TickersList";
+
+const manager = new Manager("http://localhost:4000/", {
+  reconnectionDelayMax: 10000,
+});
+
+const socket = manager.socket("/", {});
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [tickers, setTickers] = useState([]);
+  socket.io.on("open", () => {
+    socket.emit("start", () => {
+      console.log("connected");
+    });
+    socket.on("ticker", setTickers);
+  });
+  return <>{tickers.length > 0 && <TickersList tickers={tickers} />}</>;
 }
 
 export default App;
