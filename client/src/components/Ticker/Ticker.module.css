@@ -1,0 +1,22 @@
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+  border: 1px solid black;
+  padding: 15px;
+}
+
+.tickerContainer {
+  min-width: 120px;
+}
+.tickerValue {
+  background-color: orange;
+  border-radius: 5px;
+  padding: 5px 10px;
+  width: max-content;
+}
+
+.tickerChanged .tickerValue {
+  margin-left: auto;
+}
