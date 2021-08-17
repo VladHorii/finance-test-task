@@ -1,0 +1,5 @@
+.list {
+  list-style: none;
+  min-width: 500px;
+  max-width: fit-content;
+}

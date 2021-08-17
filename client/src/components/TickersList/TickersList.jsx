@@ -1,11 +1,11 @@
+import Ticker from "../Ticker/Ticker";
+import css from "./TickersList.module.css";
+
 const TickersList = ({ tickers }) => {
-  console.log(tickers);
   return (
-    <ul>
+    <ul className={css.list}>
       {tickers.map((ticker) => (
-        <li key={ticker.name}>
-          {ticker.ticker} | {ticker.price}
-        </li>
+        <Ticker ticker={ticker} key={ticker.ticker} />
       ))}
     </ul>
   );
