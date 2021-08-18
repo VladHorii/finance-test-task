@@ -4,9 +4,9 @@ import css from "./TickersList.module.css";
 const TickersList = ({ tickers }) => {
   return (
     <ul className={css.list}>
-      {tickers.map((ticker) => (
-        <Ticker ticker={ticker} key={ticker.ticker} />
-      ))}
+      {tickers.map(
+        (ticker) => ticker && <Ticker ticker={ticker} key={ticker.ticker} />
+      )}
     </ul>
   );
 };
