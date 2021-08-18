@@ -1,8 +1,28 @@
-import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import {
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  CloseOutlined,
+  PauseOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { tickersActions, tickersSelectors } from "../../redux/tickers";
 import css from "./Ticker.module.css";
 
 const Ticker = ({ ticker }) => {
+  const dispatch = useDispatch();
+  const pausedList = useSelector(tickersSelectors.getPausedList);
+  const isOnPause = pausedList.includes(ticker.ticker);
+
   const difference = (ticker.price - ticker.change).toFixed(2);
+  const handleDeleteTicker = (tickerName) => {
+    dispatch(tickersActions.removeTicker(tickerName));
+  };
+  const handlePauseTicker = (tickerName) => {
+    isOnPause
+      ? dispatch(tickersActions.removeFromPaysedList(tickerName))
+      : dispatch(tickersActions.addToPaysedList(tickerName));
+  };
 
   return (
     <li key={ticker.name} className={css.item}>
@@ -26,11 +46,15 @@ const Ticker = ({ ticker }) => {
           {Number(ticker.change_percent).toFixed(2)}
         </p>
       </div>
-      {/* <p>change: {ticker.change}</p>
-      <p>change_percent: {ticker.change_percent}</p>
-      <p>dividend: {ticker.dividend}</p>
-      <p>yield: {ticker.yield}</p>
-      <p>last_trade_time: {ticker.last_trade_time}</p> */}
+      <div className={css.icon}>
+        <CloseOutlined onClick={() => handleDeleteTicker(ticker.ticker)} />
+      </div>
+      <div
+        className={css.icon}
+        onClick={() => handlePauseTicker(ticker.ticker)}
+      >
+        {isOnPause ? <PlayCircleOutlined /> : <PauseOutlined />}
+      </div>
     </li>
   );
 };
