@@ -4,8 +4,12 @@ const http = require("http");
 const io = require("socket.io");
 const cors = require("cors");
 
-const FETCH_INTERVAL = 5000;
+let fetchInterval = 5000;
 const PORT = process.env.PORT || 4000;
+
+let pausedList = [];
+let prevResponse = [];
+let timer = null;
 
 const tickers = [
   "AAPL", // Apple
@@ -34,18 +38,31 @@ function utcDate() {
 }
 
 function getQuotes(socket) {
-  const quotes = tickers.map((ticker) => ({
-    ticker,
-    exchange: "NASDAQ",
-    price: randomValue(100, 300, 2),
-    change: randomValue(0, 200, 2),
-    change_percent: randomValue(0, 1, 2),
-    dividend: randomValue(0, 1, 2),
-    yield: randomValue(0, 2, 2),
-    last_trade_time: utcDate(),
-  }));
+  const quotes = [];
+  tickers.forEach((ticker) => {
+    if (pausedList.includes(ticker)) {
+      const prevTickerInfo = prevResponse.find((el) => el.ticker === ticker);
+      return quotes.push(prevTickerInfo);
+    }
+    quotes.push({
+      ticker,
+      exchange: "NASDAQ",
+      price: randomValue(100, 300, 2),
+      change: randomValue(0, 200, 2),
+      change_percent: randomValue(0, 1, 2),
+      dividend: randomValue(0, 1, 2),
+      yield: randomValue(0, 2, 2),
+      last_trade_time: utcDate(),
+    });
+  });
 
   socket.emit("ticker", quotes);
+  prevResponse = quotes;
+}
+
+function resetInterval(timerRef) {
+  clearInterval(timerRef);
+  timer = null;
 }
 
 function trackTickers(socket) {
@@ -53,12 +70,15 @@ function trackTickers(socket) {
   getQuotes(socket);
 
   // every N seconds
-  const timer = setInterval(function () {
+  if (timer) {
+    resetInterval(timer);
+  }
+  timer = setInterval(function () {
     getQuotes(socket);
-  }, FETCH_INTERVAL);
+  }, fetchInterval);
 
   socket.on("disconnect", function () {
-    clearInterval(timer);
+    resetInterval(timer);
   });
 }
 
@@ -75,9 +95,35 @@ const socketServer = io(server, {
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
+app.get("/allAvailableTickers", function (req, res) {
+  res.json({
+    tickers: [
+      "AAPL", // Apple
+      "GOOGL", // Alphabet
+      "MSFT", // Microsoft
+      "AMZN", // Amazon
+      "FB", // Facebook
+      "TSLA", // Tesla
+    ],
+  });
+});
 
 socketServer.on("connection", (socket) => {
   socket.on("start", () => {
+    trackTickers(socket);
+  });
+  socket.on("changePausedList", (tickersList) => {
+    pausedList = tickersList;
+  });
+  socket.on("removeTicker", (tickerName) => {
+    const idx = tickers.indexOf(tickerName);
+    tickers.splice(idx, 1);
+  });
+  socket.on("addTicker", (tickerName) => {
+    tickers.push(tickerName);
+  });
+  socket.on("fetchInterval", (time) => {
+    fetchInterval = time;
     trackTickers(socket);
   });
 });
