@@ -1,0 +1,19 @@
+.list {
+  list-style: none;
+  display: flex;
+  padding: 15px;
+  border: 1px solid black;
+  width: max-content;
+}
+.item {
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid orange;
+  cursor: pointer;
+}
+.icon {
+  margin-right: 5px;
+}
+.item:hover .icon {
+  color: red;
+}

@@ -20,3 +20,10 @@
 .tickerChanged .tickerValue {
   margin-left: auto;
 }
+.icon {
+  margin: 0 10px;
+  cursor: pointer;
+}
+.icon:hover {
+  color: red;
+}
