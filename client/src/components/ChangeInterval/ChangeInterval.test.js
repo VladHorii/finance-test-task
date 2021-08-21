@@ -7,18 +7,18 @@ describe("ChangeInterval testing", () => {
   it("Testing values in the component", () => {
     const { getByLabelText, getByRole } = render(<ChangeInterval />);
 
-    expect(getByLabelText(/Change update interval:/i)).toBeInTheDocument();
-
-    userEvent.click(getByLabelText(/Change update interval:/i));
+    const label = getByLabelText(/Change update interval/i);
+    expect(label).toBeInTheDocument();
+    userEvent.click(label);
     const input = getByRole("spinbutton");
     expect(input).toBeInTheDocument();
-    expect(input).toHaveValue(null);
-    userEvent.type(input, "1000");
-    expect(input).toHaveValue(1000);
+    expect(input).toHaveValue("5000");
+    userEvent.type(input, "0");
+    expect(input).toHaveValue("50000");
 
     const button = getByRole("button", { name: /apply/i });
     expect(button).toBeInTheDocument();
     userEvent.click(button);
-    expect(input).toHaveValue(null);
+    expect(input).toHaveValue("50000");
   });
 });
