@@ -117,10 +117,14 @@ socketServer.on("connection", (socket) => {
   });
   socket.on("removeTicker", (tickerName) => {
     const idx = tickers.indexOf(tickerName);
-    tickers.splice(idx, 1);
+    if (idx >= 0) {
+      tickers.splice(idx, 1);
+    }
   });
   socket.on("addTicker", (tickerName) => {
-    tickers.push(tickerName);
+    if (!tickers.includes(tickerName)) {
+      tickers.push(tickerName);
+    }
   });
   socket.on("fetchInterval", (time) => {
     fetchInterval = time;
