@@ -1,33 +1,127 @@
-import { combineReducers } from "redux";
-import { createReducer } from "@reduxjs/toolkit";
+// import { combineReducers } from "redux";
+// import { createReducer } from "@reduxjs/toolkit";
+// import actions from "./tickers-actions";
+
+// const tickers = createReducer([], {
+//   [actions.refresh]: (_, { payload }) => payload,
+//   [actions.removeTicker.fulfilled]: (state, { payload }) =>
+//     state.filter((el) => el.ticker !== payload),
+//   [actions.addTicker.fulfilled]: (state, { payload }) => [
+//     ...state,
+//     {
+//       ticker: payload,
+//       exchange: "NASDAQ",
+//       price: 0.0,
+//       change: 0.0,
+//       change_percent: 0.0,
+//       dividend: 0.0,
+//       yield: 0.0,
+//       last_trade_time: "2021-01-01T00:00:01.000Z",
+//     },
+//   ],
+// });
+
+// const pausedList = createReducer([], {
+//   [actions.addToPaysedList]: (state, { payload }) => [...state, payload],
+//   [actions.removeFromPaysedList]: (state, { payload }) =>
+//     state.filter((el) => el !== payload),
+// });
+
+// export default combineReducers({
+//   tickers,
+//   pausedList,
+// });
+
+import { createSlice } from "@reduxjs/toolkit";
 import actions from "./tickers-actions";
 
-const tickers = createReducer([], {
-  [actions.refresh]: (_, { payload }) => payload,
-  [actions.removeTicker.fulfilled]: (state, { payload }) =>
-    state.filter((el) => el.ticker !== payload),
-  [actions.addTicker.fulfilled]: (state, { payload }) => [
-    ...state,
-    {
-      ticker: payload,
-      exchange: "NASDAQ",
-      price: 0.0,
-      change: 0.0,
-      change_percent: 0.0,
-      dividend: 0.0,
-      yield: 0.0,
-      last_trade_time: "2021-01-01T00:00:01.000Z",
+const initState = {
+  tickers: [],
+  pausedList: [],
+};
+
+export const createCustomSlice = (initialState) => {
+  const tickersSlice = createSlice({
+    name: "tickers",
+    initialState,
+    extraReducers: {
+      [actions.refresh](state, { payload }) {
+        state.tickers = payload;
+      },
+      [actions.removeTicker.fulfilled](state, { payload }) {
+        state.tickers = state.tickers.filter((el) => el.ticker !== payload);
+
+        if (state.pausedList.includes(payload)) {
+          state.pausedList = state.pausedList.filter((el) => el !== payload);
+        }
+      },
+      [actions.addTicker.fulfilled](state, { payload }) {
+        state.tickers.push({
+          ticker: payload,
+          exchange: "NASDAQ",
+          price: 0.0,
+          change: 0.0,
+          change_percent: 0.0,
+          dividend: 0.0,
+          yield: 0.0,
+          last_trade_time: "2021-01-01T00:00:01.000Z",
+        });
+      },
+      [actions.addToPaysedList](state, { payload }) {
+        state.pausedList.push(payload);
+      },
+      [actions.removeFromPaysedList](state, { payload }) {
+        state.pausedList = state.pausedList.filter((el) => el !== payload);
+      },
     },
-  ],
-});
+  });
+  return tickersSlice;
+};
 
-const pausedList = createReducer([], {
-  [actions.addToPaysedList]: (state, { payload }) => [...state, payload],
-  [actions.removeFromPaysedList]: (state, { payload }) =>
-    state.filter((el) => el !== payload),
-});
+const tickersSlice = createCustomSlice(initState);
 
-export default combineReducers({
-  tickers,
-  pausedList,
-});
+export default tickersSlice.reducer;
+// import { createSlice } from "@reduxjs/toolkit";
+// import actions from "./tickers-actions";
+
+// const initialState = {
+//   tickers: [],
+//   pausedList: [],
+// };
+
+// const tickersSlice = createSlice({
+//   name: "tickers",
+//   initialState,
+//   extraReducers: {
+//     [actions.refresh](state, { payload }) {
+//       state.tickers = payload;
+//     },
+//     [actions.removeTicker.fulfilled](state, { payload }) {
+//       state.tickers = state.tickers.filter((el) => el.ticker !== payload);
+
+//       if (state.pausedList.includes(payload)) {
+//         state.pausedList = state.pausedList.filter((el) => el !== payload);
+//       }
+//     },
+//     [actions.addTicker.fulfilled](state, { payload }) {
+//       state.tickers.push({
+//         ticker: payload,
+//         exchange: "NASDAQ",
+//         price: 0.0,
+//         change: 0.0,
+//         change_percent: 0.0,
+//         dividend: 0.0,
+//         yield: 0.0,
+//         last_trade_time: "2021-01-01T00:00:01.000Z",
+//       });
+//     },
+//     [actions.addToPaysedList](state, { payload }) {
+//       state.pausedList.push(payload);
+//     },
+//     [actions.removeFromPaysedList](state, { payload }) {
+//       state.pausedList = state.pausedList.filter((el) => el !== payload);
+//     },
+//   },
+// });
+
+// export default tickersSlice.reducer;

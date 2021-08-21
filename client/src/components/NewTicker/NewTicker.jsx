@@ -1,15 +1,31 @@
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { tickersActions, tickersSelectors } from "../../redux/tickers";
 import { PlusOutlined } from "@ant-design/icons";
-import css from "./NewTicker.module.css";
+import axios from "axios";
 
-const NewTicker = ({ newTickersList }) => {
+import { tickersActions, tickersSelectors } from "../../redux/tickers";
+import css from "./NewTicker.module.css";
+import { BASE_URL } from "../../api/api";
+
+axios.defaults.baseURL = BASE_URL;
+
+const NewTicker = () => {
+  const [availableTickers, setAvailableTickers] = useState([]);
+
+  useEffect(() => {
+    const getTickersList = async () => {
+      const { data } = await axios.get("/allAvailableTickers");
+      setAvailableTickers(data.tickers);
+    };
+    getTickersList();
+  }, []);
+
   const dispatch = useDispatch();
   const tickers = useSelector(tickersSelectors.getTickers);
   const activeTickersList = tickers.map((el) => el.ticker);
 
   const visibilityEl = [];
-  newTickersList.forEach((el) => {
+  availableTickers.forEach((el) => {
     if (!activeTickersList.find((activeEl) => activeEl === el)) {
       visibilityEl.push(el);
     }

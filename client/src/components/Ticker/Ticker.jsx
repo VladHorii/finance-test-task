@@ -5,7 +5,9 @@ import {
   PauseOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { socket } from "../../api/api";
 import { tickersActions, tickersSelectors } from "../../redux/tickers";
 import css from "./Ticker.module.css";
 
@@ -23,6 +25,10 @@ const Ticker = ({ ticker }) => {
       ? dispatch(tickersActions.removeFromPaysedList(tickerName))
       : dispatch(tickersActions.addToPaysedList(tickerName));
   };
+
+  useEffect(() => {
+    socket.emit("changePausedList", pausedList);
+  }, [pausedList]);
 
   return (
     <li key={ticker.name} className={css.item}>
@@ -46,15 +52,21 @@ const Ticker = ({ ticker }) => {
           {Number(ticker.change_percent).toFixed(2)}
         </p>
       </div>
-      <div className={css.icon}>
-        <CloseOutlined onClick={() => handleDeleteTicker(ticker.ticker)} />
-      </div>
-      <div
+      <button
+        onClick={() => handleDeleteTicker(ticker.ticker)}
+        type="button"
+        name="delete"
+        className={css.icon}
+      >
+        <CloseOutlined />
+      </button>
+      <button
+        name="pause"
         className={css.icon}
         onClick={() => handlePauseTicker(ticker.ticker)}
       >
         {isOnPause ? <PlayCircleOutlined /> : <PauseOutlined />}
-      </div>
+      </button>
     </li>
   );
 };

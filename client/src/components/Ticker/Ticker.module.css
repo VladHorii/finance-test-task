@@ -23,6 +23,8 @@
 .icon {
   margin: 0 10px;
   cursor: pointer;
+  background-color: transparent;
+  border: none;
 }
 .icon:hover {
   color: red;
