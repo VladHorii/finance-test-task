@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import {
   ArrowUpOutlined,
   ArrowDownOutlined,
@@ -5,8 +8,6 @@ import {
   PauseOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { socket } from "../../api/api";
 import { tickersActions, tickersSelectors } from "../../redux/tickers";
 import css from "./Ticker.module.css";
@@ -19,11 +20,18 @@ const Ticker = ({ ticker }) => {
   const difference = (ticker.price - ticker.change).toFixed(2);
   const handleDeleteTicker = (tickerName) => {
     dispatch(tickersActions.removeTicker(tickerName));
+    toast.error(`${ticker.ticker} has been removed`);
   };
   const handlePauseTicker = (tickerName) => {
     isOnPause
       ? dispatch(tickersActions.removeFromPaysedList(tickerName))
       : dispatch(tickersActions.addToPaysedList(tickerName));
+
+    toast.success(
+      `The ticker <${ticker.ticker}> ${
+        isOnPause ? "was unpaused" : "has been paused"
+      }`
+    );
   };
 
   useEffect(() => {

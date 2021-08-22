@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
 
 import { tickersActions, tickersSelectors } from "./redux/tickers";
 import "./App.css";
@@ -25,21 +26,41 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="App">
-      <NewTicker />
+    <>
+      <div className="App">
+        <NewTicker />
 
-      {!isLoading.current && tickers?.length === 0 && (
-        <h2>Загружаем список тикеров...</h2>
-      )}
+        {!isLoading.current && tickers?.length === 0 && (
+          <h2>Загружаем список тикеров...</h2>
+        )}
 
-      {tickers?.length > 0 && (
-        <>
-          <h1>Tickers list</h1>
-          <TickersList tickers={tickers} />
-          <ChangeInterval />
-        </>
-      )}
-    </div>
+        {tickers?.length > 0 && (
+          <>
+            <h1>Tickers list</h1>
+            <TickersList tickers={tickers} />
+            <ChangeInterval />
+          </>
+        )}
+      </div>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 5000,
+          error: {
+            style: {
+              background: "#DC143C",
+              color: "#F0F8FF",
+            },
+          },
+          success: {
+            style: {
+              background: "#7FFF00",
+              color: "#212121",
+            },
+          },
+        }}
+      />
+    </>
   );
 }
 

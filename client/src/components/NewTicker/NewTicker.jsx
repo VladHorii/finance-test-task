@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { PlusOutlined } from "@ant-design/icons";
+import toast from "react-hot-toast";
 
 import { tickersActions, tickersSelectors } from "../../redux/tickers";
 import css from "./NewTicker.module.css";
@@ -33,6 +34,7 @@ const NewTicker = () => {
 
   const handleClick = (tickerName) => {
     dispatch(tickersActions.addTicker(tickerName));
+    toast.success("You have successfully added a new ticker");
   };
 
   return (

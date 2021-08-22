@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Form, InputNumber, Button } from "antd";
+import toast from "react-hot-toast";
 import "antd/dist/antd.css";
 import { socket } from "../../api/api";
 
@@ -8,6 +9,7 @@ const ChangeInterval = () => {
 
   const handleSubmitInterval = () => {
     socket.emit("fetchInterval", Number(interval));
+    toast.success(`Tickers update time changed to ${interval}ms.`);
   };
 
   return (
